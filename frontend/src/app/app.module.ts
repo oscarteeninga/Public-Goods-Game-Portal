@@ -23,6 +23,7 @@ import {MatGridListModule} from "@angular/material/grid-list";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {ChartsModule} from 'ng2-charts';
 import { HttpClientModule } from '@angular/common/http';
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { HttpClientModule } from '@angular/common/http';
     MatProgressSpinnerModule,
     ChartsModule,
     HttpClientModule,
+    MatButtonToggleModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

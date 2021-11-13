@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ConfigService} from "../../service/config.service";
 import {Configuration} from "../model/Configuration";
+import {ChartResult, ChartResults, exampleResults} from "../model/ChartResults";
 
 @Component({
   selector: 'app-chart',
@@ -19,39 +20,18 @@ export class ChartComponent implements OnInit {
     }
   }
 
-  freeRiders = 1
-  cooperators = 1
-  casuals = 1
-
-  multiplier = 2.0
-
   showProgressBar = false
 
-  chartData: any
-  chartLabels: any
-  chartOptions: any
+  charts: ChartResults | undefined
+
+  actualChart: ChartResult | undefined
+
+  chartOptions = {
+    responsive: true
+
+  }
 
   constructor(private configService: ConfigService) {
-    this.chartData = [
-      {
-        data: [330, 600, 260, 700],
-        label: 'Account A'
-      },
-      {
-        data: [120, 455, 100, 340],
-        label: 'Account B'
-      },
-      {
-        data: [45, 67, 800, 500],
-        label: 'Account C'
-      }
-    ];
-
-    this.chartLabels = [1,2,3,4];
-
-    this.chartOptions = {
-      responsive: true
-    };
   }
 
   ngOnInit(): void {
@@ -64,5 +44,7 @@ export class ChartComponent implements OnInit {
   runSimulation(): void {
     this.configService.getSimulationChartData(this.getConfig())
     this.showProgressBar = true
+    this.charts = exampleResults
+    this.actualChart = this.charts.amount
   }
 }
