@@ -24,4 +24,7 @@ public class ConfigurationGameDto {
   private GameStatus gameStatus;
   private String gameLink;
 
+  private int freeriders;
+  private int cooperators;
+  private int casuals;
 }

@@ -6,3 +6,12 @@ table {
   margin-left: 10px;
   margin-right: 10px;
 }
+
+.mat-card {
+  margin-bottom: 15px;
+}
+
+.mat-button-toggle-group {
+  margin-left: 10px;
+  margin-right: 10px;
+}

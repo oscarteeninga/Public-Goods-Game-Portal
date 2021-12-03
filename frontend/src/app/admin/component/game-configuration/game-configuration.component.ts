@@ -15,7 +15,7 @@ export class GameConfigurationComponent implements OnInit {
 
   prevGameName: string = '';
 
-  currentGameConf: GameConfiguration = defaultGameConfiguration;
+  currentGameConf: GameConfiguration;
 
 
   constructor(
@@ -24,6 +24,7 @@ export class GameConfigurationComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
   ) {
+    this.currentGameConf = defaultGameConfiguration
   }
 
   ngOnInit(): void {

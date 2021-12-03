@@ -24,6 +24,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { GameConnectionComponent } from './user/component/game-connection/game-connection.component';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import {MatGridListModule} from "@angular/material/grid-list";
+import {MatButtonModule} from "@angular/material/button";
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import {ChartsModule} from "ng2-charts";
 
 @NgModule({
   declarations: [
@@ -52,6 +56,10 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    MatGridListModule,
+    MatButtonModule,
+    MatButtonToggleModule,
+    ChartsModule,
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AdminAuthInterceptor, multi: true},

@@ -28,14 +28,10 @@
         class="list-group-item"
         *ngFor="let game of games; let i = index"
         [class.active]="i === currentIndex"
-        (click)="setActiveGame(game, i)"
-      >
+        (click)="setActiveGame(game, i)">
         {{ game.gameName }}
 
-        <ng-container *ngIf="game.status === GameStatus.Active">
-          <span class ="dot dot-green">
-          </span>
-        </ng-container>
+        <span *ngIf="game.status === GameStatus.Active" class="dot dot-green"></span>
       </li>
     </ul>
   </div>
@@ -49,10 +45,6 @@
 
       <div>
         <label class="custom-label"><strong>{{ currentGame.gameName }}</strong></label>
-        <a class="badge badge-warning"
-           routerLink="{{adminPaths.games.gameConfiguration.absolute}}/{{ currentGame.gameSessionToken }}">
-          {{currentConfigureButtonName}}
-        </a>
       </div>
 
       <div>
@@ -69,20 +61,25 @@
         {{ currentGame.description }}
       </div>
 
+      <button *ngIf="currentGame.status !== GameStatus.Finished" class="m-3 btn btn-warning custom-button"
+              routerLink="{{adminPaths.games.gameConfiguration.absolute}}/{{ currentGame.gameSessionToken }}">
+        Edit Configuration
+      </button>
+
+      <button *ngIf="currentGame.status === GameStatus.Configured"
+              class="m-3 btn btn-success custom-button" (click)="startGame()">
+        Start Game
+      </button>
 
       <ng-container *ngIf="currentGame.status !== GameStatus.Created">
         <h1></h1>
         <label class="label-title"><strong>Link for players to join:</strong></label>
         <div>
           <a href="{{currentGame.linkForPlayers}}" class="link-primary"> {{currentGame.linkForPlayers}} </a>
-          <mat-icon cdkCopyToClipboard="{{currentGame.linkForPlayers}}">content_copy</mat-icon>
-        </div>
+         </div>
 
-        <ng-container *ngIf="currentGame.status === GameStatus.Configured">
-          <button class="m-3 btn btn-success custom-button" (click)="startGame()">Start Game</button>
-        </ng-container>
+
       </ng-container>
-
     </div>
 
     <div *ngIf="!currentGame">

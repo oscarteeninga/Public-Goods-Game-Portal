@@ -9,6 +9,7 @@ import { PlayerDecision } from '../../model/player-decision.model';
 import { PlayerDecisionOutcome } from '../../model/player-decision-outcome.model';
 import { UserStateService } from "../../service/user-state.service";
 import { userPaths } from "../../../core/paths/user.paths";
+import {ChartResult, ChartResults, exampleResults} from "../../model/game-charts.model";
 
 @Component({
   selector: 'app-game',
@@ -32,11 +33,21 @@ export class GameComponent implements OnInit {
   historyTableColumns: string[] = [];
   historyTableData: Map<string, number>[] = [];
 
+  charts: ChartResults | undefined
+
+  actualChart: ChartResult | undefined
+
+  chartOptions = {
+    responsive: true
+  }
+
   constructor(private userStateService: UserStateService,
               private gameProgressService: GameProgressService,
               private route: ActivatedRoute,
               private router: Router) {
     this.gameSessionToken = GameSessionToken.from(route.snapshot.params.id);
+    this.charts = exampleResults;
+    this.actualChart = this.charts.amount;
   }
 
   ngOnInit(): void {
@@ -181,4 +192,7 @@ export class GameComponent implements OnInit {
     return this.userStateService.getUser().username;
   }
 
+  downloadChartsAsPDF(): void {
+
+  }
 }

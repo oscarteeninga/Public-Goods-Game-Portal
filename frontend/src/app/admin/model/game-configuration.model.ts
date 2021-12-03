@@ -15,19 +15,34 @@ export interface GameConfiguration {
   configured: boolean;
   gameStatus: string;
   gameLink: string;
+
+  freeriders: 0,
+  cooperators: 0,
+  casuals: 0,
 }
 
+export interface ArtificialPlayers {
+  freeriders: number;
+  cooperators: number;
+  casuals: number;
+}
 
 export const defaultGameConfiguration: GameConfiguration = {
   gameSessionToken: defaultGameSessionToken,
   gameName: '',
   description: '',
-  roundTime: -1,
-  numberOfRounds: -1,
-  initialMoneyAmount: -1,
-  poolMultiplierFactor: -1,
+  roundTime: 1,
+  numberOfRounds: 1,
+  initialMoneyAmount: 10,
+  poolMultiplierFactor: 2,
   configured: false,
   gameStatus: '',
   gameLink: '',
-
+  freeriders: 0,
+  cooperators: 0,
+  casuals: 0,
 };
+
+
+
+

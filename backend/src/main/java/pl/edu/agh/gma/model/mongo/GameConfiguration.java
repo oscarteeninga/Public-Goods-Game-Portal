@@ -16,18 +16,32 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 public class GameConfiguration {
 
-  @Id
-  private String id;
+    @Id
+    private String id;
 
-  private int roundTime;
-  private int numberOfRounds;
-  private double initialMoneyAmount;
-  private double poolMultiplierFactor;
+    private int roundTime;
+    private int numberOfRounds;
+    private double initialMoneyAmount;
+    private double poolMultiplierFactor;
 
-  public GameConfiguration(int roundTime, int numberOfRounds, double initialMoneyAmount, double poolMultiplierFactor) {
-    this.roundTime = roundTime;
-    this.numberOfRounds = numberOfRounds;
-    this.initialMoneyAmount = initialMoneyAmount;
-    this.poolMultiplierFactor = poolMultiplierFactor;
-  }
+    private int freeriders;
+    private int cooperators;
+    private int casuals;
+
+    public GameConfiguration(
+            int roundTime,
+            int numberOfRounds,
+            double initialMoneyAmount,
+            double poolMultiplierFactor,
+            int freeriders,
+            int cooperators,
+            int casuals) {
+        this.roundTime = roundTime;
+        this.numberOfRounds = numberOfRounds;
+        this.initialMoneyAmount = initialMoneyAmount;
+        this.poolMultiplierFactor = poolMultiplierFactor;
+        this.freeriders = freeriders;
+        this.cooperators = cooperators;
+        this.casuals = casuals;
+    }
 }
