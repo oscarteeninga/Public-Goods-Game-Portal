@@ -1,59 +1,62 @@
-import {NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 
-import {AppComponent} from './app.component';
-import {ChartComponent} from './components/chart/chart.component';
-
-import {FormsModule} from '@angular/forms';
-import {NgSelectModule} from '@ng-select/ng-select';
-import {ReactiveFormsModule} from '@angular/forms';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {MatSelectModule} from "@angular/material/select";
-import {MatProgressBarModule} from "@angular/material/progress-bar";
-import {MatButtonModule} from "@angular/material/button";
-import {MatChipsModule} from "@angular/material/chips";
-import {MatSliderModule} from "@angular/material/slider";
-import {MatInputModule} from "@angular/material/input";
-import {MatToolbarModule} from "@angular/material/toolbar";
-import {MatIconModule} from "@angular/material/icon";
-import {MatDividerModule} from "@angular/material/divider";
-import {MatCardModule} from "@angular/material/card";
-import {MatGridListModule} from "@angular/material/grid-list";
-import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
-import {ChartsModule} from 'ng2-charts';
-import { HttpClientModule } from '@angular/common/http';
-import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { AddGameComponent } from './admin/component/add-game/add-game.component';
+import { GameConfigurationComponent } from './admin/component/game-configuration/game-configuration.component';
+import { GamesListComponent } from './admin/component/games-list/games-list.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSliderModule } from '@angular/material/slider';
+import { ClipboardModule } from '@angular/cdk/clipboard';
+import { MatIconModule } from '@angular/material/icon';
+import { GameComponent } from './user/component/game/game.component';
+import { AdminNavbarComponent } from './admin/component/admin-navbar/admin-navbar.component';
+import { UserNavbarComponent } from './user/component/user-navbar/user-navbar.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatCardModule } from '@angular/material/card';
+import { AdminLoginComponent } from './admin/component/admin-login/admin-login.component';
+import { AdminAuthInterceptor } from './admin/helpers/admin-auth.interceptor';
+import { AdminAuthErrorInterceptor } from './admin/helpers/admin-auth-error.interceptor';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { GameConnectionComponent } from './user/component/game-connection/game-connection.component';
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
     AppComponent,
-    ChartComponent
+    AddGameComponent,
+    GameConfigurationComponent,
+    GamesListComponent,
+    GameComponent,
+    AdminNavbarComponent,
+    UserNavbarComponent,
+    AdminLoginComponent,
+    GameConnectionComponent,
   ],
   imports: [
     BrowserModule,
-    NgSelectModule,
-    ReactiveFormsModule,
-    BrowserAnimationsModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatProgressBarModule,
-    MatButtonModule,
-    MatChipsModule,
-    MatSliderModule,
-    MatInputModule,
+    AppRoutingModule,
     FormsModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatDividerModule,
-    MatCardModule,
-    MatGridListModule,
-    MatProgressSpinnerModule,
-    ChartsModule,
     HttpClientModule,
-    MatButtonToggleModule,
+    BrowserAnimationsModule,
+    MatSliderModule,
+    ClipboardModule,
+    MatIconModule,
+    ReactiveFormsModule,
+    MatTableModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
   ],
-  providers: [],
+  providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: AdminAuthInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: AdminAuthErrorInterceptor, multi: true},
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

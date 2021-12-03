@@ -1,0 +1,21 @@
+<nav class="navbar navbar-expand navbar-dark bg-primary margin-custom margin-bottom30">
+  <a href="#" class="navbar-brand">SING</a>
+  <div class="navbar-nav mr-auto">
+    <li class="nav-item">
+      <a routerLink="{{adminPaths.games.root.absolute}}" class="nav-link">
+        <mat-icon color="accent">home</mat-icon>
+        Games</a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="{{adminPaths.addGame.absolute}}" class="nav-link">
+        <mat-icon color="accent">add</mat-icon>
+        New Game</a>
+    </li>
+  </div>
+
+  <div *ngIf="isLoggedIn()">
+    <button class="btn btn-primary" (click)="logout()">
+      <mat-icon color="accent">logout</mat-icon>
+    </button>
+  </div>
+</nav>

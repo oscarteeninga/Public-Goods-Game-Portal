@@ -1,0 +1,39 @@
+1. Register the user    (system generates unique username and registerToken and id from database)
+                        system stores those values + CACHES it
+2. Create the game      (system registers new game with game session)
+3. Connect user to game (system assigns user to game)
+                        system can inform if user is connected to game with $sessionToken and username
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

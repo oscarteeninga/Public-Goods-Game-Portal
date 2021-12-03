@@ -1,0 +1,166 @@
+<app-admin-navbar></app-admin-navbar>
+
+<div class="container mt-3">
+  <div>
+    <h1 class="main-header"><strong>{{prevGameName}}</strong></h1>
+
+    <div class="list row">
+
+      <div class="col-md-5">
+
+        <h4 class="main-header"></h4>
+        <h4>Configuration</h4>
+
+        <form #configForm="ngForm">
+          <div class="conf-margin input-group">
+            <label class="label-title" for="roundTime">Round Time:</label>
+            <input class="float-right conf-input"
+                   id="roundTime"
+                   type="number" min="30" max="1000" step="5"
+                   required
+                   [(ngModel)]="currentGameConf.roundTime"
+                   name="roundTime"
+                   #roundTime="ngModel"
+            >
+            <div class="input-group-append">
+              <span class="float-right input-group-text"> sec </span>
+            </div>
+
+            <div *ngIf="roundTime.invalid && (roundTime.dirty || roundTime.touched)"
+                 class="alert text-danger">
+              <div *ngIf="roundTime.errors?.required">
+                Round time is required. (Between 5 and 100).
+              </div>
+              <div *ngIf="roundTime.errors?.min">
+                Round time has to be at least 5 seconds.
+              </div>
+              <div *ngIf="roundTime.errors?.max">
+                Round time has to be less than 100 seconds.
+              </div>
+            </div>
+          </div>
+
+          <div class="conf-margin input-group">
+            <label class="label-title" for="numberOfRounds">Number Of Rounds:</label>
+            <input class="float-right conf-input"
+                   id="numberOfRounds"
+                   type="number" min="1" max="100" step="1"
+                   [(ngModel)]="currentGameConf.numberOfRounds"
+                   name="numberOfRounds"
+                   #numberOfRounds="ngModel">
+
+            <div *ngIf="numberOfRounds.invalid && (numberOfRounds.dirty || numberOfRounds.touched)"
+                 class="alert text-danger">
+              <div *ngIf="numberOfRounds.errors?.required">
+                Number of rounds is required. (Between 1 and 100).
+              </div>
+              <div *ngIf="numberOfRounds.errors?.min">
+                Number of rounds has to be at least 1.
+              </div>
+              <div *ngIf="numberOfRounds.errors?.max">
+                Number of rounds has to be less than 100.
+              </div>
+            </div>
+          </div>
+
+          <div class="conf-margin input-group">
+            <label class="label-title" for="initialMoneyAmount">Initial players' money amount:</label>
+            <input class="float-right conf-input"
+                   id="initialMoneyAmount"
+                   type="number" min="1" step="1"
+                   [(ngModel)]="currentGameConf.initialMoneyAmount"
+                   name="initialMoneyAmount"
+                   #initialMoneyAmount="ngModel">
+
+            <div *ngIf="initialMoneyAmount.invalid && (initialMoneyAmount.dirty || initialMoneyAmount.touched)"
+                 class="alert text-danger">
+              <div *ngIf="initialMoneyAmount.errors?.required">
+                Initial money for each player is required.
+              </div>
+              <div *ngIf="initialMoneyAmount.errors?.min">
+                Initial money for each player has to be at least 1.
+              </div>
+            </div>
+          </div>
+
+          <div class="conf-margin input-group">
+            <label class="label-title" for="poolMultiplierFactor">Pool multiplier factor:</label>
+            <input class="float-right conf-input"
+                   id="poolMultiplierFactor"
+                   type="number" min="1" step="0.05"
+                   [(ngModel)]="currentGameConf.poolMultiplierFactor"
+                   name="poolMultiplierFactor"
+                   #poolMultiplierFactor="ngModel"
+            >
+
+            <div *ngIf="poolMultiplierFactor.invalid && (poolMultiplierFactor.dirty || poolMultiplierFactor.touched)"
+                 class="alert text-danger">
+              <div *ngIf="poolMultiplierFactor.errors?.required">
+                Pool multiplier factor is required.
+              </div>
+              <div *ngIf="poolMultiplierFactor.errors?.min">
+                Pool multiplier factor has to be at least 1.
+              </div>
+            </div>
+          </div>
+
+
+          <button class="m-3 btn btn-success custom-button" [disabled]="!configForm.valid" (click)="updateGameConf()">
+            Update
+          </button>
+
+        </form>
+      </div>
+
+
+      <div class="col-md-1"></div>
+
+      <div class="col-md-6">
+        <h4 class="main-header"></h4>
+        <h4 class="main-header"></h4>
+
+        <form>
+          <div class="form-group">
+            <label class="label-title" for="gameName">Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="gameName"
+              [(ngModel)]="currentGameConf.gameName"
+              name="gameName"
+            />
+          </div>
+
+          <h4 class="main-header"></h4>
+
+          <div class="form-group">
+            <label class="label-title" for="description">Description</label>
+            <textarea type="text" id="description" name="description" rows="7" cols="50"
+                      class="form-control"
+                      [(ngModel)]="currentGameConf.description">
+            </textarea>
+          </div>
+        </form>
+
+
+        <div *ngIf="!currentGameConf">
+          <p>Please click on a Game...</p>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="currentGameConf.configured" class="conf-margin">
+      <label class="label-title">Link for players to join:</label>
+      <h1></h1>
+      <div>
+        <a href="{{currentGameConf.gameLink}}" class="link-primary"> {{currentGameConf.gameLink}} </a>
+        <mat-icon cdkCopyToClipboard="{{currentGameConf.gameLink}}">content_copy</mat-icon>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+

@@ -1,0 +1,33 @@
+<app-admin-navbar></app-admin-navbar>
+
+<div class="max-width500 top-margin100">
+  <div class="card">
+    <h4 class="card-header">Login</h4>
+    <div class="card-body">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input id="username" type="text" formControlName="username" class="form-control"
+                 [ngClass]="{ 'is-invalid': submitted && fields.username.errors }"/>
+          <div *ngIf="submitted && fields.username.errors" class="invalid-feedback">
+            <div *ngIf="fields.username.errors.required">Username is required</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" type="password" formControlName="password" class="form-control"
+                 [ngClass]="{ 'is-invalid': submitted && fields.password.errors }"/>
+          <div *ngIf="submitted && fields.password.errors" class="invalid-feedback">
+            <div *ngIf="fields.password.errors.required">Password is required</div>
+          </div>
+        </div>
+        <button [disabled]="loading" class="btn btn-primary">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+          Login
+        </button>
+        <!-- TODO #12 - popups -->
+        <div *ngIf="error" class="alert alert-danger mt-3 mb-0"> Incorrect login or password</div>
+      </form>
+    </div>
+  </div>
+</div>

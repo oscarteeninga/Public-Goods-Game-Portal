@@ -1,0 +1,50 @@
+<app-admin-navbar></app-admin-navbar>
+
+<div class="submit-form">
+  <div *ngIf="!submitted">
+
+    <h4 class="main-header">Add new game</h4>
+    <div class="form-group">
+      <label for="gameNameId">Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="gameNameId"
+        required minlength="3"
+        [(ngModel)]="gameInfo.gameName"
+        name="Game Name"
+        #name="ngModel"
+        [class.is-invalid]="name.invalid && (name.dirty || name.touched)"
+      />
+    </div>
+
+    <div *ngIf="name.invalid && (name.dirty || name.touched)"
+         class="alert text-danger">
+
+      <div *ngIf="name.errors?.required">
+        Name is required.
+      </div>
+      <div *ngIf="name.errors?.minlength">
+        Name must be at least 3 characters long.
+      </div>
+    </div>
+
+
+    <div class="form-group">
+      <label for="description">Description</label>
+
+      <textarea type="text" id="description" name="description" rows="7" cols="50"
+                class="form-control" required
+                [(ngModel)]="gameInfo.description">
+      </textarea>
+    </div>
+
+    <button [disabled]="!name.valid" (click)="saveGame()" class="btn btn-primary">Create</button>
+  </div>
+
+  <div class="post-added" *ngIf="submitted">
+    <h4 class="main-header">New game: {{gameInfo.gameName}} was created successfully!</h4>
+    <button class="btn btn-success custom-button" (click)="goToGameList()">See Game List</button>
+    <button class="btn btn-primary custom-button" (click)="newGame()">Add Another</button>
+  </div>
+</div>

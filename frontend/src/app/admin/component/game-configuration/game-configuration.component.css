@@ -1,0 +1,33 @@
+.edit-form {
+  max-width: 400px;
+  margin: auto;
+}
+
+.main-header {
+  margin-bottom: 20px;
+  margin-top: 30px;
+  color: #0066cc;
+  font-size: 34px;
+}
+
+.label-title {
+  font-size: 20px;
+  font-style: oblique;
+  font-weight: bold;
+}
+
+.float-right {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.conf-input {
+  display: inline-block;
+  width: 15%;
+  text-align: right;
+}
+
+.conf-margin {
+  margin-bottom: 30px;
+  margin-top: 30px;
+}

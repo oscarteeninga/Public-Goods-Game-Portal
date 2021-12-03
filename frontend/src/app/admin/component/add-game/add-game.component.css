@@ -1,0 +1,22 @@
+.submit-form {
+  max-width: 500px;
+  margin: auto;
+}
+
+.post-added {
+  max-width: 750px;
+  margin: auto;
+  line-height: 200%;
+}
+
+.main-header {
+  margin: 30px;
+}
+
+.btn {
+  margin: 20px;
+}
+
+.custom-button {
+  margin: 5px 5px 5px 30px;
+}

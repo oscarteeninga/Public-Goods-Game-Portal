@@ -1,0 +1,93 @@
+<app-admin-navbar></app-admin-navbar>
+
+<div class="list row">
+  <div class="col-md-8">
+    <div class="input-group mb-3">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search by name"
+        [(ngModel)]="searchStringVal"
+        (keydown.enter)="searchGames()"
+      />
+      <div class="input-group-append">
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+          (click)="searchGames()">
+          Search
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-5">
+    <h4 class="main-header">Games</h4>
+    <ul class="list-group">
+      <li
+        class="list-group-item"
+        *ngFor="let game of games; let i = index"
+        [class.active]="i === currentIndex"
+        (click)="setActiveGame(game, i)"
+      >
+        {{ game.gameName }}
+
+        <ng-container *ngIf="game.status === GameStatus.Active">
+          <span class ="dot dot-green">
+          </span>
+        </ng-container>
+      </li>
+    </ul>
+  </div>
+
+
+  <div class="col-md-1"></div>
+
+  <div class="col-md-6">
+    <div *ngIf="currentIndex >= 0">
+      <h4></h4>
+
+      <div>
+        <label class="custom-label"><strong>{{ currentGame.gameName }}</strong></label>
+        <a class="badge badge-warning"
+           routerLink="{{adminPaths.games.gameConfiguration.absolute}}/{{ currentGame.gameSessionToken }}">
+          {{currentConfigureButtonName}}
+        </a>
+      </div>
+
+      <div>
+        <label><strong>Connected Players:</strong></label>
+        <span id="counter" class="badge badge-light">{{ currentGame.connectedPlayers }} </span>
+
+      </div>
+      <div>
+        <label><strong>Status:</strong></label>
+        {{ currentGame.status }}
+      </div>
+      <div>
+        <label><strong>Description:</strong></label>
+        {{ currentGame.description }}
+      </div>
+
+
+      <ng-container *ngIf="currentGame.status !== GameStatus.Created">
+        <h1></h1>
+        <label class="label-title"><strong>Link for players to join:</strong></label>
+        <div>
+          <a href="{{currentGame.linkForPlayers}}" class="link-primary"> {{currentGame.linkForPlayers}} </a>
+          <mat-icon cdkCopyToClipboard="{{currentGame.linkForPlayers}}">content_copy</mat-icon>
+        </div>
+
+        <ng-container *ngIf="currentGame.status === GameStatus.Configured">
+          <button class="m-3 btn btn-success custom-button" (click)="startGame()">Start Game</button>
+        </ng-container>
+      </ng-container>
+
+    </div>
+
+    <div *ngIf="!currentGame">
+      <br/>
+      <p>Please click on a Game...</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,33 @@
+.list {
+  text-align: left;
+  max-width: 1000px;
+  margin: auto;
+  line-height: 200%;
+}
+
+.main-header {
+  margin: 20px;
+}
+
+.custom-label {
+  color: #0066cc;
+  font-size: 30px;
+  margin-right: 20px;
+}
+
+.counter {
+  size: 10px;
+  font-size: 15px;
+}
+
+
+.dot {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-green {
+  background-color: #39e600;
+}
