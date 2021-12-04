@@ -95,21 +95,17 @@
     </ng-template>
 
   <mat-card *ngIf="historyTableData.length > 0">
-    <mat-card-content *ngIf="generateCharts(historyTableData) as charts">
-      <mat-button-toggle-group *ngIf="actualChart" appearance="legacy" [(ngModel)]="actualChart">
-        <mat-button-toggle [value]="charts.amount">Amount</mat-button-toggle>
-        <mat-button-toggle [value]="charts.payment">Payment</mat-button-toggle>
-      </mat-button-toggle-group>
+    <mat-card-content *ngIf="charts">
       <button mat-raised-button color="primary" (click)="downloadChartsAsPDF()">Download as PDF</button>
-      <ng-container *ngIf="actualChart">
+      <ng-container *ngFor="let chart of charts">
         <canvas class="chart"
                 baseChart
                 width="100%"
                 height="100%"
                 [chartType]="'line'"
                 [legend]="true"
-                [labels]="actualChart.chartLabels"
-                [datasets]="actualChart.chartData"
+                [labels]="chart.chartLabels"
+                [datasets]="chart.chartData"
                 [options]="chartOptions">
         </canvas>
       </ng-container>

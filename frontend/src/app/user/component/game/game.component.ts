@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { GameProgressService } from '../../service/game-progress.service';
-import { defaultGameProgress, GameProgress } from '../../model/game-progress.model';
-import { defaultGameState, GameState } from '../../model/game-state.model';
-import { GameSessionToken } from '../../../core/model/game-session-token.model';
-import { ActivatedRoute, Router } from '@angular/router';
-import { GameStatus } from '../../../core/model/game-status';
-import { PlayerDecision } from '../../model/player-decision.model';
-import { PlayerDecisionOutcome } from '../../model/player-decision-outcome.model';
-import { UserStateService } from "../../service/user-state.service";
-import { userPaths } from "../../../core/paths/user.paths";
-import {Chart, Charts, exampleResults, Round} from "../../model/charts.model";
+import {Component, OnInit} from '@angular/core';
+import {GameProgressService} from '../../service/game-progress.service';
+import {defaultGameProgress, GameProgress} from '../../model/game-progress.model';
+import {defaultGameState, GameRoundSummary, GameState} from '../../model/game-state.model';
+import {GameSessionToken} from '../../../core/model/game-session-token.model';
+import {ActivatedRoute, Router} from '@angular/router';
+import {GameStatus} from '../../../core/model/game-status';
+import {PlayerDecision} from '../../model/player-decision.model';
+import {PlayerDecisionOutcome} from '../../model/player-decision-outcome.model';
+import {UserStateService} from "../../service/user-state.service";
+import {userPaths} from "../../../core/paths/user.paths";
+import {Chart, Round} from "../../model/charts.model";
+import {ChartDataSets} from "chart.js";
+import {Label} from "ng2-charts";
 
 @Component({
   selector: 'app-game',
@@ -33,8 +35,7 @@ export class GameComponent implements OnInit {
   historyTableColumns: string[] = [];
   historyTableData: Round[] = [];
 
-  charts: Charts | undefined
-  actualChart: Chart | undefined
+  charts: Chart[] = []
 
   chartOptions = {
     responsive: true
@@ -113,14 +114,55 @@ export class GameComponent implements OnInit {
 
   }
 
-  generateCharts(data: Round[]): Charts {
-    data.forEach((row: Round) => {
-      row.forEach((name, payin) => {
-        console.log(name)
+  generatePayoffChart(): Chart {
+    let payOffs: number[] = []
+    let rounds: Label[] = Array.from(this.gameState.gameHistory.keys()).map(r => (r + 1).toString())
+    this.gameState.gameHistory.forEach((round) => {
+      payOffs.push(round.payoff)
+    })
+
+    return {
+      chartData: [{
+        data: payOffs,
+        label: "Payoff"
+      }],
+      chartLabels: rounds,
+    }
+  }
+
+  generatePlayersChart(): Chart {
+    let rounds: Label[] = Array.from(this.gameState.gameHistory.keys()).map(r => (r + 1).toString())
+
+    let names: string[] = Object.keys(this.gameState.gameHistory[0].contributions)
+    let dataFormatted = new Map<string, number[]>()
+
+    names.forEach((name: string) => {
+      this.gameState.gameHistory.forEach((round: GameRoundSummary) => {
+        let actualValues = dataFormatted.get(name) || []
+        let contributors = new Map(Object.entries(round.contributions))
+        let value = contributors.get(name) || 0.0
+        actualValues.push(value)
+        dataFormatted.set(name, actualValues)
       })
-    });
-    this.actualChart = exampleResults.payment
-    return exampleResults
+    })
+
+    let chartData: ChartDataSets[] = []
+    dataFormatted.forEach((values, name) => {
+      chartData.push({
+        data: values,
+        label: name,
+      })
+    })
+
+
+    return {
+      chartData: chartData,
+      chartLabels: rounds,
+    }
+  }
+
+  generateCharts() {
+    this.charts = [this.generatePayoffChart(), this.generatePlayersChart()]
   }
 
   private checkGameProgress(): void {
@@ -195,6 +237,8 @@ export class GameComponent implements OnInit {
       ...Array.from(allPlayerNames).sort(),
       this.payoffColumnName
     ];
+
+    this.generateCharts()
   }
 
   private goToGameConnection(): void {
