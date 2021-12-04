@@ -1,15 +1,17 @@
 import {Label} from "ng2-charts";
 import {ChartDataSets} from "chart.js";
 
-export interface ChartResults {
-  amount: ChartResult,
-  payment: ChartResult,
+export interface Charts {
+  amount: Chart,
+  payment: Chart,
 }
 
-export interface ChartResult {
+export interface Chart {
   chartData: ChartDataSets[],
   chartLabels: Label[],
 }
+
+export type Round = Map<string, number>
 
 export const exampleResults = {
   amount: {

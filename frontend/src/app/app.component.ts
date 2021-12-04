@@ -7,5 +7,5 @@ import { Component, ViewEncapsulation } from '@angular/core';
   encapsulation: ViewEncapsulation.None  // set to allow background color of the project from app.component.css settings
 })
 export class AppComponent {
-  title = 'SInG';
+  title = 'Goods Game Portal';
 }

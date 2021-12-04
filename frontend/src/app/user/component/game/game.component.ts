@@ -9,7 +9,7 @@ import { PlayerDecision } from '../../model/player-decision.model';
 import { PlayerDecisionOutcome } from '../../model/player-decision-outcome.model';
 import { UserStateService } from "../../service/user-state.service";
 import { userPaths } from "../../../core/paths/user.paths";
-import {ChartResult, ChartResults, exampleResults} from "../../model/game-charts.model";
+import {Chart, Charts, exampleResults, Round} from "../../model/charts.model";
 
 @Component({
   selector: 'app-game',
@@ -31,11 +31,10 @@ export class GameComponent implements OnInit {
   gameState: GameState = defaultGameState;
 
   historyTableColumns: string[] = [];
-  historyTableData: Map<string, number>[] = [];
+  historyTableData: Round[] = [];
 
-  charts: ChartResults | undefined
-
-  actualChart: ChartResult | undefined
+  charts: Charts | undefined
+  actualChart: Chart | undefined
 
   chartOptions = {
     responsive: true
@@ -46,8 +45,6 @@ export class GameComponent implements OnInit {
               private route: ActivatedRoute,
               private router: Router) {
     this.gameSessionToken = GameSessionToken.from(route.snapshot.params.id);
-    this.charts = exampleResults;
-    this.actualChart = this.charts.amount;
   }
 
   ngOnInit(): void {
@@ -58,6 +55,72 @@ export class GameComponent implements OnInit {
     } else {
       this.goToGameConnection();
     }
+  }
+
+  isGameActive(): boolean {
+    return this.gameProgress.status === GameStatus.Active;
+  }
+
+  sendDecision(): void {
+    let playerDecision: PlayerDecision = {
+      contribution: this.currentContribution,
+      roundNum: this.gameProgress.round,
+      username: this.getUsername(),
+    };
+
+    this.gameProgressService.sendDecision(this.gameSessionToken, playerDecision).subscribe(
+      decision => {
+        switch (decision) {
+          case PlayerDecisionOutcome.Accepted:
+            console.log('Decision accepted.');
+            this.checkGameState();
+            break;
+          case PlayerDecisionOutcome.RejectedAlreadyDecided:
+            console.warn('Decision rejected - player already decided.');
+            this.checkGameProgress();
+            break;
+          case PlayerDecisionOutcome.RejectedBadRound:
+            console.warn('Decision rejected - sent for wrong round.');
+            this.checkGameProgress();
+            break;
+          case PlayerDecisionOutcome.RejectedBadValue:
+            console.warn('Decision rejected - bad contribution value.');
+            break;
+          case PlayerDecisionOutcome.RejectedGameNotActive:
+            console.warn('Decision rejected - game not active.');
+            this.checkGameProgress();
+            break;
+          case PlayerDecisionOutcome.RejectedPlayerNotConnected:
+            console.warn('Decision rejected - player not connected to game');
+            this.goToGameConnection();
+            break;
+          case PlayerDecisionOutcome.RejectedPlayerNotRegistered:
+            console.warn('Decision rejected - player not registered.');
+            this.goToGameConnection();
+            break;
+        }
+      }, error => {
+        console.error(error);
+      }
+    )
+  }
+
+  getUsername(): string {
+    return this.userStateService.getUser().username;
+  }
+
+  downloadChartsAsPDF(): void {
+
+  }
+
+  generateCharts(data: Round[]): Charts {
+    data.forEach((row: Round) => {
+      row.forEach((name, payin) => {
+        console.log(name)
+      })
+    });
+    this.actualChart = exampleResults.payment
+    return exampleResults
   }
 
   private checkGameProgress(): void {
@@ -138,61 +201,5 @@ export class GameComponent implements OnInit {
     let targetPath = `${userPaths.connect.absolute}/${this.gameSessionToken}`;
     let returnPath = '/' + this.route.snapshot.url.join('/');
     this.router.navigate([targetPath], {queryParams: {returnUrl: returnPath}});
-  }
-
-  isGameActive(): boolean {
-    return this.gameProgress.status === GameStatus.Active;
-  }
-
-  sendDecision(): void {
-    let playerDecision: PlayerDecision = {
-      contribution: this.currentContribution,
-      roundNum: this.gameProgress.round,
-      username: this.getUsername(),
-    };
-
-    this.gameProgressService.sendDecision(this.gameSessionToken, playerDecision).subscribe(
-      decision => {
-        switch (decision) {
-          case PlayerDecisionOutcome.Accepted:
-            console.log('Decision accepted.');
-            this.checkGameState();
-            break;
-          case PlayerDecisionOutcome.RejectedAlreadyDecided:
-            console.warn('Decision rejected - player already decided.');
-            this.checkGameProgress();
-            break;
-          case PlayerDecisionOutcome.RejectedBadRound:
-            console.warn('Decision rejected - sent for wrong round.');
-            this.checkGameProgress();
-            break;
-          case PlayerDecisionOutcome.RejectedBadValue:
-            console.warn('Decision rejected - bad contribution value.');
-            break;
-          case PlayerDecisionOutcome.RejectedGameNotActive:
-            console.warn('Decision rejected - game not active.');
-            this.checkGameProgress();
-            break;
-          case PlayerDecisionOutcome.RejectedPlayerNotConnected:
-            console.warn('Decision rejected - player not connected to game');
-            this.goToGameConnection();
-            break;
-          case PlayerDecisionOutcome.RejectedPlayerNotRegistered:
-            console.warn('Decision rejected - player not registered.');
-            this.goToGameConnection();
-            break;
-        }
-      }, error => {
-        console.error(error);
-      }
-    )
-  }
-
-  getUsername(): string {
-    return this.userStateService.getUser().username;
-  }
-
-  downloadChartsAsPDF(): void {
-
   }
 }

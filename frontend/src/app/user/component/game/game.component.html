@@ -94,8 +94,8 @@
       <mat-card>No data is available for this game.</mat-card>
     </ng-template>
 
-  <mat-card *ngIf="charts">
-    <mat-card-content>
+  <mat-card *ngIf="historyTableData.length > 0">
+    <mat-card-content *ngIf="generateCharts(historyTableData) as charts">
       <mat-button-toggle-group *ngIf="actualChart" appearance="legacy" [(ngModel)]="actualChart">
         <mat-button-toggle [value]="charts.amount">Amount</mat-button-toggle>
         <mat-button-toggle [value]="charts.payment">Payment</mat-button-toggle>
