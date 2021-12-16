@@ -198,8 +198,8 @@ public class GameState {
 
     logAggState();
 
-    if (getCurrentGameTime() >
-        1000L * currentRoundMemory.getCurrentRoundNum() * currentGameDetails.getGameConfiguration().getRoundTime()) {
+    if (getCurrentGameTime() > 1000L * currentRoundMemory.getCurrentRoundNum() * currentGameDetails.getGameConfiguration().getRoundTime() ||
+    currentGameDetails.getConnectedUserNum() == currentRoundMemory.getPlayersThatDecided().size()) {
       log.trace("Going to next round: " + (currentRoundMemory.getCurrentRoundNum() <= currentGameDetails.getGameConfiguration().getNumberOfRounds())
         + "; cuurent=" + currentRoundMemory.getCurrentRoundNum() + "; total=" + currentGameDetails.getGameConfiguration().getNumberOfRounds()
       );
