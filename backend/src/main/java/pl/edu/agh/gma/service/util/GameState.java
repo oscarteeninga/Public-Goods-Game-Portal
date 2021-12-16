@@ -1,13 +1,12 @@
 package pl.edu.agh.gma.service.util;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import lombok.extern.slf4j.Slf4j;
 import pl.edu.agh.gma.dto.gameprogress.GameStateResponse;
 import pl.edu.agh.gma.dto.gameprogress.PlayerDecisionOutcomeResponse;
@@ -31,16 +30,16 @@ import pl.edu.agh.gma.service.game.GameEngine;
 
 /**
  * Stores!!! information about concrete single game
- *
- *
+ * <p>
+ * <p>
  * 1. Game is in CREATED state
- *
+ * <p>
  * 2. Game is configured (CREATED -> CONFIGURED) state
- *
+ * <p>
  * 3. Game is started (CONFIGURED -> ACTIVE):
  * 3.1 Cannot add any more players (player list is frozen)
  * 3.2 First round with initial time is created
- *
+ * <p>
  * 4. If game is ACTIVE players can send their request with decision:
  * 4.1 Each request should be processed only once
  * 4.2 Each request should be send within round time
@@ -72,8 +71,10 @@ public class GameState {
   private final RoundResultDao roundResultDao;
   private final GameConfigurationDao gameConfigurationDao;
 
+  private List<User> artificialUsers = new ArrayList<>();
+
   public GameState(String gameName, String gameDescription, GameSessionToken sessionToken,
-      GameDao gameDao, RoundResultDao roundResultDao, GameConfigurationDao gameConfigurationDao) {
+                   GameDao gameDao, RoundResultDao roundResultDao, GameConfigurationDao gameConfigurationDao) {
     this.currentGameDetails = new GameDetails(gameName, gameDescription, GameStatus.CREATED, sessionToken);
     this.currentRoundMemory = new RoundMemory();
     this.gameEngine = new GameEngine();
@@ -84,11 +85,26 @@ public class GameState {
     this.gameConfigurationDao = gameConfigurationDao;
   }
 
+  public List<User> artificialUsers() {
+    int casuals = this.getGameConfiguration().map(GameConfiguration::getCasuals).orElse(0);
+    int cooperators = this.getGameConfiguration().map(GameConfiguration::getCooperators).orElse(0);
+    int freeriders = this.getGameConfiguration().map(GameConfiguration::getFreeriders).orElse(0);
+
+    List<User> artificialUsers = new ArrayList<>();
+    IntStream.range(0, casuals).forEach(id -> artificialUsers.add(new User("casuals" + id, "undefined")));
+    IntStream.range(0, cooperators).forEach(id -> artificialUsers.add(new User("cooperators" + id, "undefined")));
+    IntStream.range(0, freeriders).forEach(id -> artificialUsers.add(new User("freeriders" + id, "undefined")));
+
+    return artificialUsers;
+  }
+
   public void startGame(GameSessionToken sessionToken, List<User> connectedUsers) {
     writeLock.lock();
     try {
       assert (sessionToken.equals(this.currentGameDetails.getSessionToken()));
       ensureGameNotFinished();
+      this.artificialUsers = artificialUsers();
+      connectedUsers.addAll(this.artificialUsers);
       this.currentGameDetails.setRoundsNum(1);
       this.currentGameDetails.setConnectedUsers(connectedUsers);
       this.currentGameDetails.setConnectedUserNum(connectedUsers.size());
@@ -140,7 +156,7 @@ public class GameState {
     }
   }
 
-  private boolean isContributionValid(PlayerDecisionRequest pDR){
+  private boolean isContributionValid(PlayerDecisionRequest pDR) {
     return pDR.getContribution() <= 0 || wallets.getCurrentMoney(pDR.getUsername()) < pDR.getContribution();
   }
 
@@ -199,9 +215,13 @@ public class GameState {
     logAggState();
 
     if (getCurrentGameTime() > 1000L * currentRoundMemory.getCurrentRoundNum() * currentGameDetails.getGameConfiguration().getRoundTime() ||
-    currentGameDetails.getConnectedUserNum() == currentRoundMemory.getPlayersThatDecided().size()) {
+        currentGameDetails.getConnectedUserNum() == currentRoundMemory.getPlayersThatDecided().size() + artificialUsers.size()) {
+      artificialUsers.forEach(user -> {
+        //TODO: Need to be improved
+        currentRoundMemory.addPlayerDecision(new PlayerDecisionRequest(user.getUsername(), currentRoundMemory.getCurrentRoundNum(), 1.0));
+      });
       log.trace("Going to next round: " + (currentRoundMemory.getCurrentRoundNum() <= currentGameDetails.getGameConfiguration().getNumberOfRounds())
-        + "; cuurent=" + currentRoundMemory.getCurrentRoundNum() + "; total=" + currentGameDetails.getGameConfiguration().getNumberOfRounds()
+          + "; cuurent=" + currentRoundMemory.getCurrentRoundNum() + "; total=" + currentGameDetails.getGameConfiguration().getNumberOfRounds()
       );
       if (currentRoundMemory.getCurrentRoundNum() <= currentGameDetails.getGameConfiguration().getNumberOfRounds()) {
 
@@ -218,7 +238,7 @@ public class GameState {
     return Optional.empty();
   }
 
-  private void logAggState(){
+  private void logAggState() {
     log.info("Round: " + this.currentRoundMemory.getCurrentRoundNum()
         + " #players: " + this.currentRoundMemory.getPlayersThatDecided().size()
         + "/" + this.currentGameDetails.getConnectedUserNum()
@@ -230,7 +250,7 @@ public class GameState {
   }
 
 
-  private void storeRoundResults(RoundResults roundResults){
+  private void storeRoundResults(RoundResults roundResults) {
     RoundResults r = roundResultDao.save(roundResults);
     log.debug("Storing round result: " + r.toString());
     currentGameDetails.add(r);
@@ -239,7 +259,7 @@ public class GameState {
     storeGameDetails();
   }
 
-  private void storeGameDetails(){
+  private void storeGameDetails() {
     log.debug("Storing game details for " + currentGameDetails.getSessionToken());
     log.trace(currentGameDetails.toString());
     gameDao.save(currentGameDetails);
@@ -296,7 +316,7 @@ public class GameState {
     }
   }
 
-  private boolean isGameActiveUnlocked(){
+  private boolean isGameActiveUnlocked() {
     return this.currentGameDetails.getStatus().equals(GameStatus.ACTIVE);
   }
 
@@ -309,17 +329,17 @@ public class GameState {
     }
   }
 
-  public long getGameTimeLeft(){
+  public long getGameTimeLeft() {
     return Math.max(0,
         (long) currentGameDetails.getGameConfiguration().getRoundTime() * currentGameDetails.getGameConfiguration().getNumberOfRounds()
-        - getCurrentGameTime()/1000
+            - getCurrentGameTime() / 1000
     );
   }
 
-  public long getRoundTimeLeft(){
+  public long getRoundTimeLeft() {
     return Math.max(0,
         1000L * currentGameDetails.getGameConfiguration().getRoundTime() * currentRoundMemory.getCurrentRoundNum()
-        - getCurrentGameTime()
+            - getCurrentGameTime()
     );
   }
 
@@ -415,20 +435,20 @@ public class GameState {
     }
   }
 
-  private GameDetails getCurrentGameDetails(){
+  private GameDetails getCurrentGameDetails() {
     return currentGameDetails;
   }
 
-  public List<RoundResults> getRoundListResults(){
+  public List<RoundResults> getRoundListResults() {
     return this.currentGameDetails.getRoundList();
   }
 
-  public Map<String, Double> getWallets(){
+  public Map<String, Double> getWallets() {
     return this.wallets.getAllUserWallets();
   }
 
-  public void updateConnectedUserNum(int updatedConnectedUserNumber){
-    log.debug("New connected users: " + updatedConnectedUserNumber + " for game: " + currentGameDetails.getSessionToken() );
+  public void updateConnectedUserNum(int updatedConnectedUserNumber) {
+    log.debug("New connected users: " + updatedConnectedUserNumber + " for game: " + currentGameDetails.getSessionToken());
     writeLock.lock();
     try {
       this.currentGameDetails.setConnectedUserNum(updatedConnectedUserNumber);

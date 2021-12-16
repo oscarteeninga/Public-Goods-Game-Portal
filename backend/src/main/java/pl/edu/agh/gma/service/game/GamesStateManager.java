@@ -12,6 +12,7 @@ import pl.edu.agh.gma.dto.gameprogress.PlayerDecisionOutcomeResponse;
 import pl.edu.agh.gma.dto.gameprogress.PlayerDecisionRequest;
 import pl.edu.agh.gma.model.GameSessionToken;
 import pl.edu.agh.gma.model.mongo.GameConfiguration;
+import pl.edu.agh.gma.model.mongo.User;
 import pl.edu.agh.gma.service.RoundResultDao;
 import pl.edu.agh.gma.service.TokenService;
 import pl.edu.agh.gma.service.util.GameState;
