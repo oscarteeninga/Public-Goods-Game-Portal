@@ -94,10 +94,10 @@
       <mat-card>No data is available for this game.</mat-card>
     </ng-template>
 
-  <mat-card *ngIf="historyTableData.length > 0">
+  <mat-card *ngFor="let chart of charts">
     <mat-card-content *ngIf="charts">
       <button mat-raised-button color="primary" (click)="downloadChartsAsPDF()">Download as PDF</button>
-      <ng-container *ngFor="let chart of charts">
+      <ng-container>
         <canvas class="chart"
                 baseChart
                 width="100%"

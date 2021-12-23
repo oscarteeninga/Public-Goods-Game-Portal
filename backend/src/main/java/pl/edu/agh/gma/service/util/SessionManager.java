@@ -62,7 +62,7 @@ public class SessionManager {
   }
 
   public List<User> getUsersFor(GameSessionToken gameSessionToken) {
-    return sessions.getOrDefault(gameSessionToken, Collections.emptyList());
+    return sessions.getOrDefault(gameSessionToken, new ArrayList<>());
   }
 
   public int getUsersNumFor(GameSessionToken gameSessionToken) {

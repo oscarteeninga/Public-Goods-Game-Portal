@@ -111,7 +111,7 @@ export class GameComponent implements OnInit {
   }
 
   downloadChartsAsPDF(): void {
-
+    //TODO
   }
 
   generatePayoffChart(): Chart {

@@ -14,8 +14,12 @@ import pl.edu.agh.gma.dto.gameprogress.PlayerDecisionRequest;
 import pl.edu.agh.gma.error.exceptions.GameConfigurationException;
 import pl.edu.agh.gma.error.exceptions.GameIsAlreadyFinishedException;
 import pl.edu.agh.gma.mapper.GameStateMapper;
+import pl.edu.agh.gma.model.artificial.ArtificialUser;
 import pl.edu.agh.gma.model.GameSessionToken;
 import pl.edu.agh.gma.model.GameStatus;
+import pl.edu.agh.gma.model.artificial.Casual;
+import pl.edu.agh.gma.model.artificial.Cooperator;
+import pl.edu.agh.gma.model.artificial.FreeRider;
 import pl.edu.agh.gma.model.mongo.GameConfiguration;
 import pl.edu.agh.gma.model.mongo.GameDetails;
 import pl.edu.agh.gma.model.mongo.PlayerDecisionSummary;
@@ -71,7 +75,7 @@ public class GameState {
   private final RoundResultDao roundResultDao;
   private final GameConfigurationDao gameConfigurationDao;
 
-  private List<User> artificialUsers = new ArrayList<>();
+  private List<ArtificialUser> artificialUsers = new ArrayList<>();
 
   public GameState(String gameName, String gameDescription, GameSessionToken sessionToken,
                    GameDao gameDao, RoundResultDao roundResultDao, GameConfigurationDao gameConfigurationDao) {
@@ -85,15 +89,15 @@ public class GameState {
     this.gameConfigurationDao = gameConfigurationDao;
   }
 
-  public List<User> artificialUsers() {
+  public List<ArtificialUser> artificialUsers() {
     int casuals = this.getGameConfiguration().map(GameConfiguration::getCasuals).orElse(0);
     int cooperators = this.getGameConfiguration().map(GameConfiguration::getCooperators).orElse(0);
     int freeriders = this.getGameConfiguration().map(GameConfiguration::getFreeriders).orElse(0);
 
-    List<User> artificialUsers = new ArrayList<>();
-    IntStream.range(0, casuals).forEach(id -> artificialUsers.add(new User("casuals" + id, "undefined")));
-    IntStream.range(0, cooperators).forEach(id -> artificialUsers.add(new User("cooperators" + id, "undefined")));
-    IntStream.range(0, freeriders).forEach(id -> artificialUsers.add(new User("freeriders" + id, "undefined")));
+    List<ArtificialUser> artificialUsers = new ArrayList<>();
+    IntStream.range(0, casuals).forEach(id -> artificialUsers.add(new Casual(id)));
+    IntStream.range(0, cooperators).forEach(id -> artificialUsers.add(new Cooperator(id)));
+    IntStream.range(0, freeriders).forEach(id -> artificialUsers.add(new FreeRider(id)));
 
     return artificialUsers;
   }
@@ -124,6 +128,13 @@ public class GameState {
       log.trace(Arrays.toString(playerDecisionsBeforeFirstRound.toArray()));
 
       storeRoundResults(new RoundResults(0, playerDecisionsBeforeFirstRound));
+
+      System.out.println(getConnectedUserNum());
+
+
+      if (getConnectedUserNum() == this.artificialUsers.size()) {
+        this.pullUpGameStatus();
+      }
     } finally {
       writeLock.unlock();
     }
@@ -149,7 +160,6 @@ public class GameState {
         log.warn("Player $(" + playerDecision.getUsername() + ") tries to contribute wrong amount: " + playerDecision.getContribution());
         return PlayerDecisionOutcomeResponse.REJECTED_BAD_VALUE;
       }
-      pullUpGameStatus();
       return currentRoundMemory.addPlayerDecision(playerDecision);
     } finally {
       writeLock.unlock();
@@ -206,6 +216,22 @@ public class GameState {
     }
   }
 
+  private void updateTime() {
+    gameStartTimestamp = System.currentTimeMillis() - 1000L * currentRoundMemory.getCurrentRoundNum() * currentGameDetails.getGameConfiguration().getRoundTime();
+  }
+
+  private void artificialDecisions() {
+    artificialUsers.forEach(user -> {
+      currentRoundMemory.addPlayerDecision(
+          new PlayerDecisionRequest(
+              user.getUsername(),
+              currentRoundMemory.getCurrentRoundNum(),
+              user.contribution(wallets.getCurrentMoney(user.getUsername()))
+          )
+      );
+    });
+  }
+
   // dociagniecie current round num
   private Optional<GameStateResponse> pullUpGameStatus() {
     log.debug("UPDATE Curremt game time: " + getCurrentGameTime() + " / " +
@@ -216,10 +242,8 @@ public class GameState {
 
     if (getCurrentGameTime() > 1000L * currentRoundMemory.getCurrentRoundNum() * currentGameDetails.getGameConfiguration().getRoundTime() ||
         currentGameDetails.getConnectedUserNum() == currentRoundMemory.getPlayersThatDecided().size() + artificialUsers.size()) {
-      artificialUsers.forEach(user -> {
-        //TODO: Need to be improved
-        currentRoundMemory.addPlayerDecision(new PlayerDecisionRequest(user.getUsername(), currentRoundMemory.getCurrentRoundNum(), 1.0));
-      });
+      this.artificialDecisions();
+      this.updateTime();
       log.trace("Going to next round: " + (currentRoundMemory.getCurrentRoundNum() <= currentGameDetails.getGameConfiguration().getNumberOfRounds())
           + "; cuurent=" + currentRoundMemory.getCurrentRoundNum() + "; total=" + currentGameDetails.getGameConfiguration().getNumberOfRounds()
       );
@@ -232,6 +256,9 @@ public class GameState {
 
       if (currentRoundMemory.getCurrentRoundNum() > currentGameDetails.getGameConfiguration().getNumberOfRounds())
         finishGame();
+      else if (this.getConnectedUserNum() == this.artificialUsers.size()) {
+        pullUpGameStatus();
+      }
 
       return Optional.ofNullable(gameStateMapper.mapToGameStateResponse(this));
     }
