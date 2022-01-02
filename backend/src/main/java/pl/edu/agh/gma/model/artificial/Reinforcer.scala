@@ -70,3 +70,6 @@ class Reinforcer(id: Int, initWallet: Double) extends ArtificialUser("Reinforcer
     values.map(v => if (v == values.max) 1.0 else 0.0)
   }
 }
+object Reinforcer {
+  def create(id: Int, initWallet: Double): Reinforcer = new Reinforcer(id, initWallet)
+}

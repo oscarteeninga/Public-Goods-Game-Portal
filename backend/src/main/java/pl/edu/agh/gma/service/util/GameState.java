@@ -14,12 +14,9 @@ import pl.edu.agh.gma.dto.gameprogress.PlayerDecisionRequest;
 import pl.edu.agh.gma.error.exceptions.GameConfigurationException;
 import pl.edu.agh.gma.error.exceptions.GameIsAlreadyFinishedException;
 import pl.edu.agh.gma.mapper.GameStateMapper;
-import pl.edu.agh.gma.model.artificial.ArtificialUser;
+import pl.edu.agh.gma.model.artificial.*;
 import pl.edu.agh.gma.model.GameSessionToken;
 import pl.edu.agh.gma.model.GameStatus;
-import pl.edu.agh.gma.model.artificial.Casual;
-import pl.edu.agh.gma.model.artificial.Cooperator;
-import pl.edu.agh.gma.model.artificial.FreeRider;
 import pl.edu.agh.gma.model.mongo.GameConfiguration;
 import pl.edu.agh.gma.model.mongo.GameDetails;
 import pl.edu.agh.gma.model.mongo.PlayerDecisionSummary;
@@ -93,11 +90,16 @@ public class GameState {
     int casuals = this.getGameConfiguration().map(GameConfiguration::getCasuals).orElse(0);
     int cooperators = this.getGameConfiguration().map(GameConfiguration::getCooperators).orElse(0);
     int freeriders = this.getGameConfiguration().map(GameConfiguration::getFreeriders).orElse(0);
+    int reinforcers = this.getGameConfiguration().map(GameConfiguration::getReinforcers).orElse(0);
+    int sensitives = this.getGameConfiguration().map(GameConfiguration::getSensitives).orElse(0);
+    double wallet = this.getGameConfiguration().map(GameConfiguration::getInitialMoneyAmount).orElse(0.0);
 
     List<ArtificialUser> artificialUsers = new ArrayList<>();
     IntStream.range(0, casuals).forEach(id -> artificialUsers.add(new Casual(id)));
     IntStream.range(0, cooperators).forEach(id -> artificialUsers.add(new Cooperator(id)));
     IntStream.range(0, freeriders).forEach(id -> artificialUsers.add(new FreeRider(id)));
+    IntStream.range(0, reinforcers).forEach(id -> artificialUsers.add(new Reinforcer(id, wallet)));
+    IntStream.range(0, sensitives).forEach(id -> artificialUsers.add(new Sensitive(id, wallet)));
 
     return artificialUsers;
   }

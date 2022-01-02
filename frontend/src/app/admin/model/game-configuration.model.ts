@@ -16,9 +16,15 @@ export interface GameConfiguration {
   gameStatus: string;
   gameLink: string;
 
-  freeriders: 0,
-  cooperators: 0,
-  casuals: 0,
+  freeriders: 0;
+  cooperators: 0;
+  casuals: 0;
+
+  reinforcers: 0;
+  sensitives: 0;
+  neural: 0;
+
+  presidents: 0;
 }
 
 export interface ArtificialPlayers {
@@ -41,6 +47,10 @@ export const defaultGameConfiguration: GameConfiguration = {
   freeriders: 0,
   cooperators: 0,
   casuals: 0,
+  reinforcers: 0,
+  sensitives: 0,
+  neural: 0,
+  presidents: 0,
 };
 
 

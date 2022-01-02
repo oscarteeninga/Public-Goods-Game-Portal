@@ -41,7 +41,7 @@
                     aria-label="units"></mat-slider>
       </mat-card-content>
       <mat-card-content>
-        <h2 class="mat-card-title">Artificial players</h2>
+        <h2 class="mat-card-title">Simple artificial players</h2>
         <mat-form-field appearance="fill">
           <mat-label>Free Riders</mat-label>
           <input matInput type="number" min="0" [(ngModel)]="currentGameConf.freeriders">
@@ -52,7 +52,21 @@
         </mat-form-field>
         <mat-form-field appearance="fill">
           <mat-label>Casuals</mat-label>
+          <mat-hint>Random contribution</mat-hint>
           <input matInput type="number" min="0" [(ngModel)]="currentGameConf.casuals">
+        </mat-form-field>
+      </mat-card-content>
+      <mat-card-content>
+        <h2 class="mat-card-title">Smart artificial players</h2>
+        <mat-form-field appearance="fill">
+          <mat-label>Reinforcers</mat-label>
+          <mat-hint>N-step SARSA Algorithm</mat-hint>
+          <input matInput type="number" min="0" [(ngModel)]="currentGameConf.reinforcers">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Sensitives</mat-label>
+          <mat-hint>Uses emotions</mat-hint>
+          <input matInput type="number" min="0" [(ngModel)]="currentGameConf.sensitives">
         </mat-form-field>
       </mat-card-content>
       <mat-card-content>

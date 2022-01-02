@@ -28,6 +28,12 @@ public class GameConfiguration {
     private int cooperators;
     private int casuals;
 
+    private int reinforcers;
+    private int sensitives;
+    private int neural;
+
+    private int presidents;
+
     public GameConfiguration(
             int roundTime,
             int numberOfRounds,
@@ -35,7 +41,11 @@ public class GameConfiguration {
             double poolMultiplierFactor,
             int freeriders,
             int cooperators,
-            int casuals) {
+            int casuals,
+            int reinforcers,
+            int sensitives,
+            int neural,
+            int presidents) {
         this.roundTime = roundTime;
         this.numberOfRounds = numberOfRounds;
         this.initialMoneyAmount = initialMoneyAmount;
@@ -43,5 +53,9 @@ public class GameConfiguration {
         this.freeriders = freeriders;
         this.cooperators = cooperators;
         this.casuals = casuals;
+        this.reinforcers = reinforcers;
+        this.sensitives = sensitives;
+        this.neural = neural;
+        this.presidents = presidents;
     }
 }

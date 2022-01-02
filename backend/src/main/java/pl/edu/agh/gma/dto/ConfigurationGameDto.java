@@ -27,4 +27,10 @@ public class ConfigurationGameDto {
   private int freeriders;
   private int cooperators;
   private int casuals;
+
+  private int reinforcers;
+  private int sensitives;
+  private int neural;
+
+  private int presidents;
 }
