@@ -1,7 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.5.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'java'
+    id 'scala'
 }
 
 group = 'pl.edu.agh'
@@ -22,6 +22,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: '2.5.3'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.5.3'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.3'
+    implementation group: "org.scala-lang", name: "scala-library", version: '2.13.7'
 
     implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
     implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'

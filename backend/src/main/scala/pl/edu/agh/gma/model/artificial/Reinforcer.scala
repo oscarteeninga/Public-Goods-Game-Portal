@@ -1,6 +1,5 @@
 package pl.edu.agh.gma.model.artificial
 
-
 class Reinforcer(id: Int, initWallet: Double) extends ArtificialUser("Reinforcer " + id) {
 
   type Action = Int
@@ -15,7 +14,6 @@ class Reinforcer(id: Int, initWallet: Double) extends ArtificialUser("Reinforcer
   val actions: List[Action] = (0 to 10).toList
 
   var lastWallet: Double = initWallet
-
 
 
   override def contribution(wallet: Double): Double = {
@@ -47,9 +45,9 @@ class Reinforcer(id: Int, initWallet: Double) extends ArtificialUser("Reinforcer
 
   private def selectAction(actionsDistribution: Map[Action, Double]): Action = {
     val actions = actionsDistribution.keys
-    val probabilities = actionsDistribution.values.toList// must be at least close
-    val dsums  :Seq[Double] = probabilities.scanLeft(0.0)(_+_).tail
-    val distro :Seq[Double] = dsums.init :+ 1.1 // close a possible gap
+    val probabilities = actionsDistribution.values.toList // must be at least close
+    val dsums: Seq[Double] = probabilities.scanLeft(0.0)(_ + _).tail
+    val distro: Seq[Double] = dsums.init :+ 1.1 // close a possible gap
     distro.indexWhere(_ > util.Random.nextDouble())
   }
 
@@ -63,13 +61,11 @@ class Reinforcer(id: Int, initWallet: Double) extends ArtificialUser("Reinforcer
     actions.zip(greedyProbabilities(state, actions)).toMap
 
   private def randomProbabilities(actions: List[Action]): List[Double] =
-    actions.map(_ => 1.0/actions.size)
+    actions.map(_ => 1.0 / actions.size)
 
   private def greedyProbabilities(state: State, actions: List[Action]): List[Double] = {
-    val values = actions.map(action => q.getOrElse((state, action), 0))
+    val values = actions.map(action => q.getOrElse((state, action), 0.0))
+    val max = values.max
     values.map(v => if (v == values.max) 1.0 else 0.0)
   }
-}
-object Reinforcer {
-  def create(id: Int, initWallet: Double): Reinforcer = new Reinforcer(id, initWallet)
 }
